@@ -23,7 +23,7 @@ class ZdyIpGetter:
 
     def __init__(self):
         # 购买服务时，网站给出的提取ip的api，替换成自己的
-        self.api_url = 'http://xxxxxxxxxxxxxxxxxxxxxxxxxx'
+        self.api_url = 'http://api.xdaili.cn/xdaili-api//greatRecharge/getGreatIp?spiderId=5ae27e4e2ede44f8826cb1224fdb963b&orderno=YZ20203250648EyVEao&returnType=1&count=10'
         self.logger = utils.get_logger(getattr(self.__class__, '__name__'))
         self.proxy_list = []
         self.good_proxy_list = []
@@ -47,10 +47,11 @@ class ZdyIpGetter:
         }
         try:
             # 验证代理是否可用时，访问的是ip138的服务
-            resp = requests.get('http://2019.ip138.com/ic.asp', proxies=proxies, timeout=10)
+            # resp = requests.get('http://2019.ip138.com/ic.asp', proxies=proxies, timeout=10)
+            resp = requests.get('http://www.httpbin.org/ip', proxies=proxies, timeout=10)
             # self.logger.info(resp.content.decode('gb2312'))
             # 判断是否成功使用代理ip进行访问
-            assert proxy.split(':')[0] in resp.content.decode('gb2312')
+            assert proxy.split(':')[0] in resp.text
             self.logger.info('[GOOD] - {}'.format(proxy))
             self.good_proxy_list.append(proxy)
         except Exception as e:
@@ -64,7 +65,8 @@ class ZdyIpGetter:
         """
         while True:
             try:
-                res = requests.get(self.api_url, timeout=10).content.decode('utf8')
+                # res = requests.get(self.api_url, timeout=10).content.decode('utf8')
+                res = requests.get(self.api_url, timeout=10).text
                 break
             except Exception as e:
                 self.logger.error('获取代理列表失败！重试！{}'.format(e))
@@ -74,7 +76,7 @@ class ZdyIpGetter:
         elif 'bad' in res:
             self.logger.error('请求失败！')
         # 检测未考虑到的异常情况
-        elif res.count('.') != 15:
+        elif res.count(':') != 10:
             self.logger.error(res)
         else:
             self.logger.info('开始读取代理列表！')
@@ -94,8 +96,10 @@ class ZdyIpGetter:
         供其他组件访问
         :return:
         """
+        print(self.good_proxy_list)
         for proxy in self.good_proxy_list:
-            self.server.zadd(settings.IP_POOL_KEY, int(time.time()) + settings.PROXY_IP_TTL, proxy)
+            # self.server.zadd(settings.IP_POOL_KEY, int(time.time()) + settings.PROXY_IP_TTL, proxy)
+            self.server.zadd(settings.IP_POOL_KEY,{proxy:int(time.time()) + settings.PROXY_IP_TTL})
 
     def fetch_new_ip(self):
         """

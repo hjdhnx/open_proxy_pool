@@ -34,6 +34,24 @@ def random_ip():
     else:
         return ''
 
+@app.route('/list/')
+def list_ip():
+    """
+    获取一个随机ip
+    :return:
+    """
+    # 获取redis中仍可用的全部ip
+    proxy_ips = redis_client.zrangebyscore(ip_pool_key, int(time.time()),
+                                           int(time.time()) + settings.PROXY_IP_TTL * 10)
+    if proxy_ips:
+        proxy_ips = map(lambda x:x.decode("utf-8"),proxy_ips)
+        ip = "<br>".join(proxy_ips)
+        # 如果ip需要密码访问，则添加
+        if settings.USE_PASSWORD:
+            ip = '{}:{}@{}'.format(settings.USERNAME, settings.PASSWORD, ip)
+        return ip
+    else:
+        return ''
 
 @app.route('/total/')
 def total_ip():
@@ -57,4 +75,5 @@ def main():
 
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=settings.API_WEB_PORT)
+    # app.run('0.0.0.0', port=settings.API_WEB_PORT)
+    main()

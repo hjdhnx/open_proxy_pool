@@ -43,6 +43,8 @@
 
 # 运行说明
 
+pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+
 1. clone项目到目标服务器。
 2. 进入项目根目录。
 3. 安装requirements.txt中的相关依赖。

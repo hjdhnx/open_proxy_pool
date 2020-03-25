@@ -8,13 +8,13 @@
 IP_POOL_KEY = 'open_proxy_pool'
 
 # redis连接，根据实际情况进行配置
-REDIS_SERVER_URL = 'redis://:your_password@your_host:port/db_name'
+REDIS_SERVER_URL = 'redis://:123456@127.0.0.1:6379/db_name'
 
 # api对外端口
 API_WEB_PORT = 9102
 
 # 代理是否需要通过密码访问,当此项为False时可无视USERNAME和PASSWORD的配置
-USE_PASSWORD = True
+USE_PASSWORD = False
 
 # 用户名
 # 注意：用户名密码是指代理服务方提供给你，用以验证访问授权的凭证。
@@ -51,4 +51,4 @@ FETCH_INTERVAL = 12
 SQUID_KEEPER_INTERVAL = 12
 
 # 代理ip的生命周期，即一个新ip在多久后将被删除，单位：秒
-PROXY_IP_TTL = 60
+PROXY_IP_TTL = 600
